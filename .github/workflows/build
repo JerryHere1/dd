@@ -29,5 +29,3 @@ jobs:
         with:
           name: DarijaVoiceBot-plugin
           path: build/libs/DarijaVoiceBot-*.jar
-
-
