@@ -13,12 +13,19 @@ repositories {
 // Build with JDK 25. The plugin's own code targets Java 21 so it can show a clear
 // error on old servers, but the Discord voice encryption library (JDAVE) needs
 // the SERVER to run on Java 25.
+java {
+    // Allow Java 25 libraries (JDAVE) even though our own code targets Java 21
+    disableAutoTargetJvm()
+}
 
 val jdaVersion = "6.5.0"
 val jdaveVersion = "0.1.8"
 
 // Everything in "bundle" is packed inside the plugin jar.
-val bundle: Configuration by configurations.creating
+val bundle: Configuration by configurations.creating {
+    isCanBeResolved = false
+    isCanBeConsumed = false
+}
 
 dependencies {
     // Provided by the Paper server at runtime
@@ -56,7 +63,7 @@ tasks.jar {
     archiveFileName.set("DarijaVoiceBot-${project.version}.jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from({
-        bundle.filter { it.name.endsWith(".jar") }.map { zipTree(it) }
+        configurations.runtimeClasspath.get().filter { it.name.endsWith(".jar") }.map { zipTree(it) }
     }) {
         exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.EC")
         exclude("module-info.class", "META-INF/versions/*/module-info.class")
